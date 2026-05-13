@@ -1,33 +1,34 @@
-const HtmlWebpackPlugin = require('html-webpack-plugin');
-const path = require('path');
-
+const path = require("path");
+const HtmlWebpackPlugin = require("html-webpack-plugin");
+ 
 module.exports = {
-
-    module: {
-        rules: [
-            {
-                test: /\.css$/i,
-                use: ["style-loader", "css-loader"],
-            },
-        ],
-      },
-  // Can be 'development' or 'production'
-  mode: 'development', 
-  // The starting point of your application
-  entry: './src/index.js', 
+  // 1. MODE: tells webpack we are in development
+  mode: "development",
+ 
+  // 2. ENTRY: where webpack starts reading your code
+  entry: "./src/index.js",
+ 
+  // 3. OUTPUT: where webpack puts the finished bundle
   output: {
-    // The name of the bundled file
-    filename: 'bundle.js',
-    // The absolute path to the output directory
-    path: path.resolve(__dirname, 'dist'), 
-    // Cleans the /dist folder before each build
-    clean: true, 
+    filename: "main.js",
+    path: path.resolve(__dirname, "dist"),
+    clean: true, // clears the dist folder each time you build
   },
-
-  plugin: [
+ 
+  // 4. PLUGINS: connects your index.html to the bundle automatically
+  plugins: [
     new HtmlWebpackPlugin({
-        title: 'My todo-app',
-        template: 'src/index.html'
-    })
+      template: "./index.html",
+    }),
   ],
-};
+ 
+  // 5. MODULE RULES: teaches webpack how to handle CSS files
+  module: {
+    rules: [
+      {
+        test: /\.css$/i,           // any file ending in .css
+        use: ["style-loader", "css-loader"], // process it with these two loaders
+      },
+    ],
+  },
+}
