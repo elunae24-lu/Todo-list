@@ -1,18 +1,119 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Todo list</title>
-    <link rel="stylesheet" href="style/style.css">
-</head>
-<body>
- <div id="app-container">
-    
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Todo App</title>
+  </head>
 
- </div>
+  <body>
 
+    <div id="app-container">
 
-</body>
+      <!-- SIDEBAR -->
+      <aside id="sidebar">
+        <div id="sidebar-header">
+          <h2>My Projects</h2>
+        </div>
+        <ul id="project-list"></ul>
+        <button id="add-project-btn">+ New Project</button>
+      </aside>
 
+      <!-- MAIN PANEL -->
+      <main id="main-panel">
+        <div id="main-header">
+          <h1 id="project-title">My Tasks</h1>
+          <button id="add-todo-btn">+ Add</button>
+        </div>
+        <ul id="todo-list"></ul>
+      </main>
+
+      <!-- DETAIL PANEL (hidden until a todo is clicked) -->
+      <aside id="detail-panel" class="hidden">
+        <div id="detail-header">
+          <button id="close-detail-btn">&#x2715;</button>
+        </div>
+        <div id="detail-content">
+          <h2 id="detail-title"></h2>
+          <p id="detail-description"></p>
+          <div class="detail-row">
+            <span class="detail-label">Due Date</span>
+            <span id="detail-due-date"></span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Priority</span>
+            <span id="detail-priority"></span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Notes</span>
+            <span id="detail-notes"></span>
+          </div>
+          <div id="detail-actions">
+            <button id="edit-todo-btn">Edit</button>
+            <button id="delete-todo-btn">Delete</button>
+          </div>
+        </div>
+      </aside>
+
+    </div>
+
+    <!-- NEW TODO MODAL -->
+    <div id="modal-overlay" class="hidden">
+      <div id="todo-modal">
+        <div id="modal-header">
+          <h3>New Todo</h3>
+          <button id="close-modal-btn">&#x2715;</button>
+        </div>
+        <div id="modal-body">
+          <div class="form-group">
+            <label for="todo-title-input">Title</label>
+            <input type="text" id="todo-title-input" placeholder="What needs to be done?" />
+          </div>
+          <div class="form-group">
+            <label for="todo-desc-input">Description</label>
+            <textarea id="todo-desc-input" placeholder="Add more details..."></textarea>
+          </div>
+          <div class="form-group">
+            <label for="todo-date-input">Due Date</label>
+            <input type="date" id="todo-date-input" />
+          </div>
+          <div class="form-group">
+            <label for="todo-priority-input">Priority</label>
+            <select id="todo-priority-input">
+              <option value="low">Low</option>
+              <option value="medium">Medium</option>
+              <option value="high">High</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="todo-notes-input">Notes</label>
+            <textarea id="todo-notes-input" placeholder="Any extra thoughts..."></textarea>
+          </div>
+        </div>
+        <div id="modal-footer">
+          <button id="cancel-todo-btn">Cancel</button>
+          <button id="save-todo-btn">Save Todo</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- NEW PROJECT MODAL -->
+    <div id="project-modal-overlay" class="hidden">
+      <div id="project-modal">
+        <div id="project-modal-header">
+          <h3>New Project</h3>
+          <button id="close-project-modal-btn">&#x2715;</button>
+        </div>
+        <div class="form-group">
+          <label for="project-name-input">Project Name</label>
+          <input type="text" id="project-name-input" placeholder="e.g. Work, Personal..." />
+        </div>
+        <div id="project-modal-footer">
+          <button id="cancel-project-btn">Cancel</button>
+          <button id="save-project-btn">Create Project</button>
+        </div>
+      </div>
+    </div>
+
+  </body>
 </html>
