@@ -1,4 +1,4 @@
-class Projects {
+class createProjects {
     constructor(name) {
         this.this = crypto.randomUUID();
         this.name = name;
@@ -7,4 +7,4 @@ class Projects {
     }
 }
 
-export default Projects
+export default createProjects
