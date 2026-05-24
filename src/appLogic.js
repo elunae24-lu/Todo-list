@@ -5,7 +5,7 @@ import createProjects from "./project.js";
 const project = [];
 
 // ex project for startup
-const exProject = new createProjects("My task");
+const exProject =  new createProjects("My task");
 project.push(exProject);
 
 // --- Projects Function 
@@ -19,7 +19,7 @@ const addProject = (name) => {
 
 const deleteProject = (projectId) => {
 // filter out the project that matches the id
-const index = project.findIndex(p => p.id === process);
+const index = project.findIndex(p => p.id === projectId);
 project.splice(index, 1)
 };
 
@@ -29,19 +29,19 @@ const getProject = (projectId) =>
 // ---Add Function
 
 const addTodo = (projectId, title, description, dueDate, priority, notes) => {
-    const project = getProject(projectId);
+    const currentProject = getProject(projectId);
     const newTodo = new createAdd(title, description, dueDate, priority, notes);
-    project.todos.push(newTodo);
+    currentProject.todos.push(newTodo);
 };
 
 const deleteAdd = (projectId, todoid) => {
-const project = getProject(projectId);
-project.todos.find(t => t.id === todoid);
+const currentProject = getProject(projectId);
+currentProject.todos = project.todos.filter(t => t.id === todoid);
 };
 
 const getAdd= (projectId, todoid) => {
-const project = getProject(projectId);
-return project.todos.find(t => t.id === todoid)
+const currentProject = getProject(projectId);
+return currentProject.todos.find(t => t.id === todoid)
 };
 
 const toggleComplete = (projectId, todoid) => {

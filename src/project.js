@@ -1,8 +1,8 @@
 class createProjects {
     constructor(name) {
-        this.this = crypto.randomUUID();
+        this.id = crypto.randomUUID();
         this.name = name;
-        this.add = [];
+        this.todos = [];
 
     }
 }
