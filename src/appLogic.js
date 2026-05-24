@@ -36,7 +36,7 @@ const addTodo = (projectId, title, description, dueDate, priority, notes) => {
 
 const deleteAdd = (projectId, todoid) => {
 const currentProject = getProject(projectId);
-currentProject.todos = project.todos.filter(t => t.id === todoid);
+currentProject.todos = currentProject.todos.filter(t => t.id !== todoid);
 };
 
 const getAdd= (projectId, todoid) => {
