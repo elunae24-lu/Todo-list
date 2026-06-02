@@ -83,6 +83,71 @@ const renderTodos = () => {
     todoList.appendChild(li)
   })
 }
+
+// Add todo button opens the modal
+document.getElementById('add-todo-btn')
+  .addEventListener('click', () => {
+    document.getElementById('modal-overlay')
+      .classList.remove('hidden');
+});
+
+// Save todo button reads the form and calls addTodo
+document.getElementById('save-todo-btn')
+  .addEventListener('click', () => {
+    const title       = document.getElementById('todo-title-input').value;
+    const description = document.getElementById('todo-desc-input').value;
+    const dueDate     = document.getElementById('todo-date-input').value;
+    const priority    = document.getElementById('todo-priority-input').value;
+    const notes       = document.getElementById('todo-notes-input').value;
+
+    if (!title) return;  // don't save empty todos
+
+    addTodo(currentProjectId, title, description, dueDate, priority, notes);
+    saveStorage(getAllProjects());
+    renderTodos();
+
+    // Close modal and clear the form
+    document.getElementById('modal-overlay').classList.add('hidden');
+    document.getElementById('todo-title-input').value = '';
+});
+
+// Add project button
+document.getElementById('add-project-btn')
+  .addEventListener('click', () => {
+    document.getElementById('project-modal-overlay')
+      .classList.remove('hidden');
+});
+
+// Save project button
+document.getElementById('save-project-btn')
+  .addEventListener('click', () => {
+    const name = document.getElementById('project-name-input').value;
+    if (!name) return;
+
+    addProject(name);
+    saveStorage(getAllProjects());
+    renderSidebar();
+
+    document.getElementById('project-modal-overlay').classList.add('hidden');
+    document.getElementById('project-name-input').value = '';
+})
+
+  // Cancel projects modal
+     document.getElementById("cancel-todo-btn")
+      .addEventListener('click', () => {
+        document.getElementById("modal-overlay").classList.add('hidden')
+
+      })
+
+      // Cancel project modal
+      document.getElementById("cancel-project-btn")
+       .addEventListener('click', () => {
+          document.getElementById("project-modal-footer").classList.add('hidden')
+       })
+
+       
+
+      
     // Export render function so index.js can call then
     export {renderSidebar, renderTodos};
 
