@@ -73,7 +73,15 @@ const renderTodos = () => {
         //Delete Button
         const deleteBtn = document.createElement('button')
         deleteBtn.classList.add('todo-delete-btn')
-        deleteBtn.textContent = 'X'
+        deleteBtn.textContent = "X"
+
+        // Click handler for delete
+        deleteBtn.addEventListener('click', (e) => {
+            e.stopPropagation()     // Stop the panel from opening
+            deleteAdd(currentProjectId, todo.id)
+            saveStorage(getAllProjects())
+            renderTodos()
+        })
 
     // Append everything to the list item
     li.appendChild(bar)
@@ -142,7 +150,7 @@ document.getElementById('save-project-btn')
       // Cancel project modal
       document.getElementById("cancel-project-btn")
        .addEventListener('click', () => {
-          document.getElementById("project-modal-footer").classList.add('hidden')
+          document.getElementById("project-modal-overlay").classList.add('hidden')
        })
 
        
