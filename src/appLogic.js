@@ -49,10 +49,15 @@ const toggleComplete = (projectId, todoid) => {
     add.isComplete = !add.isComplete // flip to true to false or false to true
 };
 
+const loadProjects = (saveProjects) => {
+    project.length = 0 // clear the array
+    saveProjects.forEach(p => project.push(p))
+}
+
 // Export everthing 
 export {
     getAllProjects, addProject, deleteProject, getProject, 
-    addTodo, deleteAdd, getAdd, toggleComplete
+    addTodo, deleteAdd, getAdd, toggleComplete, loadProjects
 }
 
 

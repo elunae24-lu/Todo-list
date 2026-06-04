@@ -1,105 +1,172 @@
-import{ getAllProjects, addProject, deleteProject, addTodo,
-     deleteAdd, getProject, toggleComplete} from './appLogic.js';
+import { getAllProjects, addProject, deleteProject, addTodo,
+         deleteAdd, getProject, toggleComplete } from './appLogic.js';
+import { saveStorage } from './storage.js';
 
-import {saveStorage} from './storage.js';
-
-// Track which projects is currently selected
+// ================================
+// TRACKED VARIABLES
+// ================================
 let currentProjectId = getAllProjects()[0].id;
+let currentTodoId    = null;
+let isEditing        = false;
 
-// grab element from HTML
-const projectList = document.getElementById('project-list');
-const todoList = document.getElementById('todo-list');
+// ================================
+// HTML ELEMENTS
+// ================================
+const projectList  = document.getElementById('project-list');
+const todoList     = document.getElementById('todo-list');
 const projectTitle = document.getElementById('project-title');
 
-const renderSidebar = () => { 
-  //clear first so we don't get duplicate
-  projectList.innerHTML = ''                                                            
+// ================================
+// RENDER SIDEBAR
+// ================================
+const renderSidebar = () => {
+  // Clear first so we don't get duplicates
+  projectList.innerHTML = '';
 
-  //loop througth each project and create a list 
-        getAllProjects().forEach((project) => {
-        const li         = document.createElement('li');
-        li.textContent   = project.name;
-        li.dataset.id    = project.id
+  getAllProjects().forEach((project) => {
+    const li       = document.createElement('li');
+    li.textContent = project.name;
+    li.dataset.id  = project.id;
 
-        // Highligth the currently selectet project 
-     if(project.id === currentProjectId) {
-        li.classList.add('active');
-     }
-    
-     //Project switches 
-     li.addEventListener('click', () => {
-        currentProjectId = project.id;
-        renderSidebar();
-        renderTodos();
-     });
+    // Highlight the selected project
+    if (project.id === currentProjectId) {
+      li.classList.add('active');
+    }
 
-     projectList.appendChild(li)
-
+    // Clicking a project switches to it
+    li.addEventListener('click', () => {
+      currentProjectId = project.id;
+      renderSidebar();
+      renderTodos();
     });
+
+    projectList.appendChild(li);
+  });
 };
 
+// ================================
+// RENDER TODOS
+// ================================
 const renderTodos = () => {
-  //clear first
-  todoList.innerHTML =  ''
+  // Clear first
+  todoList.innerHTML = '';
 
-  // Get the currently selected project
-  const project = getProject(currentProjectId)
+  const project = getProject(currentProjectId);
+  projectTitle.textContent = project.name;
 
-  // Update the title in the header
-  projectTitle.textContent = project.name
-
-  // Loop throught every todo
   project.todos.forEach((todo) => {
-    const li = document.createElement('li')
-    
-    // Priority bar on the left
-    const bar = document.createElement('div')
-    bar.classList.add('priority-bar', todo.priority)
+    const li = document.createElement('li');
 
-    // CheckBox circle
-    const check = document.createElement('div')
-    check.classList.add('todo-check')
-    if(todo.isComplete) check.classList.add('checked')
+    // Priority bar
+    const bar = document.createElement('div');
+    bar.classList.add('priority-bar', todo.priority);
 
-      //todo title and due date
-      const info = document.createElement('div')
-      info.classList.add('todo-info')
-      info.innerHTML = `
-      <div class="todo-item-title ${todo.isComplete ? 'complete' : ''}">
+    // Checkbox
+    const check = document.createElement('div');
+    check.classList.add('todo-check');
+    if (todo.isComplete) check.classList.add('checked');
+
+    check.addEventListener('click', (e) => {
+      e.stopPropagation();
+      toggleComplete(currentProjectId, todo.id);
+      saveStorage(getAllProjects());
+      renderTodos();
+    });
+
+    // Title and due date
+    const info = document.createElement('div');
+    info.classList.add('todo-info');
+    info.innerHTML = `
+      <div class="todo-item-title ${todo.isComplete ? 'completed' : ''}">
         ${todo.title}
-         </div>
-         <div class="todo-item-date">${todo.dueDate}</div>`
+      </div>
+      <div class="todo-item-date">${todo.dueDate}</div>
+    `;
 
-        //Delete Button
-        const deleteBtn = document.createElement('button')
-        deleteBtn.classList.add('todo-delete-btn')
-        deleteBtn.textContent = "X"
+    // Delete button
+    const deleteBtn = document.createElement('button');
+    deleteBtn.classList.add('todo-delete-btn');
+    deleteBtn.textContent = '✕';
 
-        // Click handler for delete
-        deleteBtn.addEventListener('click', (e) => {
-            e.stopPropagation()     // Stop the panel from opening
-            deleteAdd(currentProjectId, todo.id)
-            saveStorage(getAllProjects())
-            renderTodos()
-        })
+    deleteBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      deleteAdd(currentProjectId, todo.id);
+      saveStorage(getAllProjects());
+      renderTodos();
+    });
 
-    // Append everything to the list item
-    li.appendChild(bar)
-    li.appendChild(check)
-    li.appendChild(info)
-    li.appendChild(deleteBtn)
-    todoList.appendChild(li)
-  })
-}
+    // Click todo row to open detail panel
+    li.addEventListener('click', () => {
+      openDetailPanel(todo);
+    });
 
-// Add todo button opens the modal
+    li.appendChild(bar);
+    li.appendChild(check);
+    li.appendChild(info);
+    li.appendChild(deleteBtn);
+    todoList.appendChild(li);
+  });
+};
+
+// ================================
+// DETAIL PANEL
+// ================================
+const openDetailPanel = (todo) => {
+  currentTodoId = todo.id;
+  document.getElementById('detail-panel').classList.remove('hidden');
+  document.getElementById('detail-title').textContent       = todo.title;
+  document.getElementById('detail-description').textContent = todo.description;
+  document.getElementById('detail-due-date').textContent    = todo.dueDate;
+  document.getElementById('detail-priority').textContent    = todo.priority;
+  document.getElementById('detail-notes').textContent       = todo.notes;
+};
+
+// Close detail panel
+document.getElementById('close-detail-btn')
+  .addEventListener('click', () => {
+    document.getElementById('detail-panel').classList.add('hidden');
+  });
+
+// Delete todo from detail panel
+document.getElementById('delete-todo-btn')
+  .addEventListener('click', () => {
+    deleteAdd(currentProjectId, currentTodoId);
+    saveStorage(getAllProjects());
+    renderTodos();
+    document.getElementById('detail-panel').classList.add('hidden');
+  });
+
+// Edit todo — fills the form with current values
+document.getElementById('edit-todo-btn')
+  .addEventListener('click', () => {
+    isEditing = true;
+    const todo = getProject(currentProjectId)
+                 .todos.find(t => t.id === currentTodoId);
+
+    document.getElementById('todo-title-input').value    = todo.title;
+    document.getElementById('todo-desc-input').value     = todo.description;
+    document.getElementById('todo-date-input').value     = todo.dueDate;
+    document.getElementById('todo-priority-input').value = todo.priority;
+    document.getElementById('todo-notes-input').value    = todo.notes;
+
+    document.getElementById('detail-panel').classList.add('hidden');
+    document.getElementById('modal-overlay').classList.remove('hidden');
+  });
+
+// ================================
+// ADD TODO MODAL
+// ================================
 document.getElementById('add-todo-btn')
   .addEventListener('click', () => {
-    document.getElementById('modal-overlay')
-      .classList.remove('hidden');
-});
+    document.getElementById('modal-overlay').classList.remove('hidden');
+  });
 
-// Save todo button reads the form and calls addTodo
+document.getElementById('cancel-todo-btn')
+  .addEventListener('click', () => {
+    document.getElementById('modal-overlay').classList.add('hidden');
+  });
+
+// Save todo — handles both new and edit
 document.getElementById('save-todo-btn')
   .addEventListener('click', () => {
     const title       = document.getElementById('todo-title-input').value;
@@ -108,25 +175,47 @@ document.getElementById('save-todo-btn')
     const priority    = document.getElementById('todo-priority-input').value;
     const notes       = document.getElementById('todo-notes-input').value;
 
-    if (!title) return;  // don't save empty todos
+    if (!title) return;
 
-    addTodo(currentProjectId, title, description, dueDate, priority, notes);
+    if (isEditing) {
+      // UPDATE existing todo
+      const todo       = getProject(currentProjectId)
+                         .todos.find(t => t.id === currentTodoId);
+      todo.title       = title;
+      todo.description = description;
+      todo.dueDate     = dueDate;
+      todo.priority    = priority;
+      todo.notes       = notes;
+      isEditing        = false;
+    } else {
+      // CREATE new todo
+      addTodo(currentProjectId, title, description, dueDate, priority, notes);
+    }
+
     saveStorage(getAllProjects());
     renderTodos();
 
-    // Close modal and clear the form
+    // Close and clear the form
     document.getElementById('modal-overlay').classList.add('hidden');
     document.getElementById('todo-title-input').value = '';
-});
+    document.getElementById('todo-desc-input').value  = '';
+    document.getElementById('todo-date-input').value  = '';
+    document.getElementById('todo-notes-input').value = '';
+  });
 
-// Add project button
+// ================================
+// ADD PROJECT MODAL
+// ================================
 document.getElementById('add-project-btn')
   .addEventListener('click', () => {
-    document.getElementById('project-modal-overlay')
-      .classList.remove('hidden');
-});
+    document.getElementById('project-modal-overlay').classList.remove('hidden');
+  });
 
-// Save project button
+document.getElementById('cancel-project-btn')
+  .addEventListener('click', () => {
+    document.getElementById('project-modal-overlay').classList.add('hidden');
+  });
+
 document.getElementById('save-project-btn')
   .addEventListener('click', () => {
     const name = document.getElementById('project-name-input').value;
@@ -138,24 +227,9 @@ document.getElementById('save-project-btn')
 
     document.getElementById('project-modal-overlay').classList.add('hidden');
     document.getElementById('project-name-input').value = '';
-})
+  });
 
-  // Cancel projects modal
-     document.getElementById("cancel-todo-btn")
-      .addEventListener('click', () => {
-        document.getElementById("modal-overlay").classList.add('hidden')
-
-      })
-
-      // Cancel project modal
-      document.getElementById("cancel-project-btn")
-       .addEventListener('click', () => {
-          document.getElementById("project-modal-overlay").classList.add('hidden')
-       })
-
-       
-
-      
-    // Export render function so index.js can call then
-    export {renderSidebar, renderTodos};
-
+// ================================
+// EXPORT
+// ================================
+export { renderSidebar, renderTodos };

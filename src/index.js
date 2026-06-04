@@ -1,13 +1,13 @@
 import './styles/style.css'
 import { renderSidebar, renderTodos } from './display'
 import { loadStorage, saveStorage } from './storage'
-import { getAllProjects } from './appLogic'
+import { getAllProjects, loadProjects } from './appLogic'
 
 //load save data or new
 const save = loadStorage()
 
 if(save && save.length > 0) {
-    console.log('loaded from storage', save)
+   loadProjects(save)  // put saved date back into the array
 }
 
 // Render the init screen
